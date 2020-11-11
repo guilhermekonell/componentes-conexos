@@ -12,7 +12,6 @@ public class FileUtils {
     private static List<Character> ALFABETO = Arrays.asList('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
 
     public static File getFile() {
-        //System.out.println("Lendo o arquivo de entrada no diretório " + ARQUIVO_ENTRADA);
         return new File(ARQUIVO_ENTRADA);
     }
 
@@ -38,48 +37,19 @@ public class FileUtils {
                 for (int i = 0; i < Integer.parseInt(verticesArestas[QUANTIDADE_ARESTA]); i++) {
                     String aresta = arquivo.readLine();
                     String[] vertices = aresta.split(" ");
-                    Character v1 = vertices[0].charAt(0);
-                    Character v2 = vertices[1].charAt(0);
 
-                    boolean achouGrafo = false;
-                    for (Grafo grafo : grafosTest) {
-                        // se tem um dos vertice no grafo, e não tem o outro, adiciona o vertice no grafo
-                        if (!grafo.containsVertice(v1) && grafo.containsVertice(v2)) {
-                            grafo.getVertices().add(v1);
-                            verticesDisponiveis.remove(v1);
-                            achouGrafo = true;
-                            break;
-                        } else if (grafo.containsVertice(v1) && !grafo.containsVertice(v2)) {
-                            grafo.getVertices().add(v2);
-                            verticesDisponiveis.remove(v2);
-                            achouGrafo = true;
-                            break;
-                        } else if (grafo.containsVertice(v1) && grafo.containsVertice(v2)) {
-                            achouGrafo = true;
-                            break;
-                        }
-                    }
-
-                    // se não achou grafo, é um novo grafo
-                    if (!achouGrafo) {
-                        Grafo novoGrafo = new Grafo();
-                        novoGrafo.getVertices().addAll(Arrays.asList(v1, v2));
-                        grafosTest.add(novoGrafo);
-                        verticesDisponiveis.removeAll(novoGrafo.getVertices());
-                    }
+                    incluiOuCriaGrafo(verticesDisponiveis, grafosTest, vertices);
                 }
 
-                // se ainda tiver aresta disponível, cria um grafo pra cada um (pois são grafos )
+                // se ainda tiver aresta disponível, cria um grafo pra cada um (pois são grafos de 1 só vertice)
                 verticesDisponiveis.forEach(ver -> {
                     Grafo novoGrafo = new Grafo();
                     novoGrafo.getVertices().add(ver);
                     grafosTest.add(novoGrafo);
                 });
 
-                grafos.add(agrupaArestasComVerticesIguais(grafosTest));
+                grafos.add(grafosTest);
             }
-
-
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo de entrada não encontrado!");
         } catch (IOException e) {
@@ -89,33 +59,38 @@ public class FileUtils {
         return grafos;
     }
 
-    private static List<Grafo> agrupaArestasComVerticesIguais(List<Grafo> grafosTest) {
-        List<Grafo> toReturn = new ArrayList<>();
+    // verifica se algum dos vertices já estão em algum grafo e inclui, se não, cria um novo grafo
+    private static void incluiOuCriaGrafo(List<Character> verticesDisponiveis, List<Grafo> grafosTest, String[] vertices) {
+        Character vertice1 = vertices[0].charAt(0);
+        Character vertice2 = vertices[1].charAt(0);
 
-        grafosTest.forEach(grafo -> {
-            boolean achouGrafo = false;
-            for (Grafo grafoToReturn : toReturn) {
-                for (Character vertice : grafoToReturn.getVertices()) {
-                    if (grafo.containsVertice(vertice)) {
-                        grafoToReturn.getVertices().addAll(grafo.getVertices());
-                        achouGrafo = true;
-                        break;
-                    }
-                }
+        boolean achouGrafo = false;
+        for (Grafo grafo : grafosTest) {
+            // se tem um dos vertice no grafo, e não tem o outro, adiciona o vertice no grafo
+            if (!grafo.containsVertice(vertice1) && grafo.containsVertice(vertice2)) {
+                grafo.getVertices().add(vertice1);
+                verticesDisponiveis.remove(vertice1);
+                achouGrafo = true;
+                break;
+            } else if (grafo.containsVertice(vertice1) && !grafo.containsVertice(vertice2)) {
+                grafo.getVertices().add(vertice2);
+                verticesDisponiveis.remove(vertice2);
+                achouGrafo = true;
+                break;
+            } else if (grafo.containsVertice(vertice1) && grafo.containsVertice(vertice2)) {
+                achouGrafo = true;
+                break;
             }
+        }
 
-            if (!achouGrafo) {
-                toReturn.add(grafo);
-            }
-        });
-
-        // remove vertices repetidos e ordena
-        toReturn.forEach(g -> {
-            g.setVertices(g.getVertices().stream().distinct().collect(Collectors.toList()));
-            g.getVertices().sort(Character::compareTo);
-        });
-
-        return toReturn;
+        // se não achou grafo que já tenha algum vertice igual, é um novo grafo
+        if (!achouGrafo) {
+            Grafo novoGrafo = new Grafo();
+            novoGrafo.getVertices().addAll(Arrays.asList(vertice1, vertice2));
+            grafosTest.add(novoGrafo);
+            verticesDisponiveis.removeAll(novoGrafo.getVertices());
+        }
     }
+
 
 }
