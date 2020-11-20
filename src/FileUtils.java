@@ -2,8 +2,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Guilherme Konell e Anuska Kepler Rehn
+ */
 public class FileUtils {
 
     private static String ARQUIVO_ENTRADA = "C:\\temp\\entrada.in";
@@ -16,7 +18,7 @@ public class FileUtils {
     }
 
     public static List<List<Grafo>> getGrafosOfFile(File entrada) {
-        List<List<Grafo>> grafos = new ArrayList<>();
+        List<List<Grafo>> testes = new ArrayList<>();
 
         try {
             BufferedReader arquivo = new BufferedReader(new FileReader(entrada));
@@ -48,7 +50,7 @@ public class FileUtils {
                     grafosTest.add(novoGrafo);
                 });
 
-                grafos.add(grafosTest);
+                testes.add(grafosTest);
             }
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo de entrada não encontrado!");
@@ -56,7 +58,7 @@ public class FileUtils {
             e.printStackTrace();
         }
 
-        return grafos;
+        return testes;
     }
 
     // verifica se algum dos vertices já estão em algum grafo e inclui, se não, cria um novo grafo

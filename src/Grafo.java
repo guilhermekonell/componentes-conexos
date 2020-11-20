@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Guilherme Konell e Anuska Kepler Rehn
+ */
 public class Grafo {
 
     private List<Character> vertices;
